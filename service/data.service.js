@@ -94,68 +94,125 @@ var acno=parseInt(acno);
   //   }
   // }
 
-const deposit = (acno, pswd, amt) => {
+const deposit = (acno, password, amt) => {
 
 
-  var amount = parseInt(amt)
-  let user = accountDetails;
-  if (acno in user) {
-    if (pswd == user[acno]["password"]) {
-      user[acno]["balance"] += amount;
-      return {
-        statusCode: 200,
-        status: true,
-        balance: user[acno]["balance"],
-        message: amount + "crdtd and new blnce is " + user[acno]["balance"]
-      }
-    }
-    else {
+  var amount = parseInt(amt);
+  //let user = accountDetails;
+  return db.User.findOne({ acno,password })
+  .then(user => {
+    if(!user)
+    {
       return {
         statusCode: 422,
         status: false,
-        message: "incrct pswd"
+        message: "invalid acnt"
       }
     }
-  }
-
-  else {
-    return {
-      statusCode: 422,
-      status: false,
-      message: "invalid acnt"
-    }
-  }
+    
+user.balance+=amount;
+user.save();
+return {
+  statusCode: 200,
+  status: true,
+  balance: user.balance,
+  message:  amount + "credited and new blnce is " + user.balance
 }
-const withdraw = (acno, pswd, amt) => {
+    
+    
+  
+  })
+}
+
+//      
+//   if (acno in user) {
+//     if (pswd == user[acno]["password"]) {
+//       user[acno]["balance"] += amount;
+//       return {
+//         statusCode: 200,
+//         status: true,
+//         balance: user[acno]["balance"],
+//         message: amount + "crdtd and new blnce is " + user[acno]["balance"]
+//       }
+//     }
+//     else {
+//       return {
+//         statusCode: 422,
+//         status: false,
+//         message: "incrct pswd"
+//       }
+//     }
+//   }
+
+//   else {
+//     return {
+//       statusCode: 422,
+//       status: false,
+//       message: "invalid acnt"
+//     }
+//   }
+
+const withdraw = (acno, password, amt) => {
   var amount = parseInt(amt)
-  let user = accountDetails;
-  if (acno in user) {
-    if (pswd == user[acno]["password"]) {
-      user[acno]["balance"] -= amount;
-      return {
-        statusCode: 200,
-        status: true,
-        balance: user[acno]["balance"],
-        message: amount + "debited and new blnce is " + user[acno]["balance"]
-      }
-    }
-    else {
+  return db.User.findOne({ acno,password })
+  .then(user => {
+    if(!user)
+    {
       return {
         statusCode: 422,
         status: false,
-        message: "incrct pswd"
+        message: "invalid acnt"
       }
     }
-  }
-
-  else {
-    return {
-      statusCode: 422,
-      status: false,
-      message: "invalid acnt"
+    if(user.balance<=amount)
+    {
+      return{
+        statusCode: 422,
+        status: false,
+        message: "insufficient balance"
+      }
     }
-  }
+user.balance-=amount;
+user.save();
+return {
+  statusCode: 200,
+  status: true,
+  balance: user.balance,
+  message:  amount + "debited and new blnce is " + user.balance
 }
+    
+    
+  
+  })
+}
+  //let user = accountDetails;
+  // if (acno in user) {
+  //   if (pswd == user[acno]["password"]) {
+  //     user[acno]["balance"] -= amount;
+  //     return {
+  //       statusCode: 200,
+  //       status: true,
+  //       balance: user[acno]["balance"],
+  //       message: amount + "debited and new blnce is " + user[acno]["balance"]
+  //     }
+  //   }
+  //   else {
+  //     return {
+  //       statusCode: 422,
+  //       status: false,
+  //       message: "incrct pswd"
+  //     }
+  //   }
+  // }
+
+  // else {
+  //   return {
+  //     statusCode: 422,
+  //     status: false,
+  //     message: "invalid acnt"
+  //   }
+  // }
+
 
 module.exports = {
   register,
