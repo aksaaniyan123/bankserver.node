@@ -52,7 +52,8 @@ var acno=parseInt(acno);
         return {
           statusCode: 200,
           status: true,
-          message: "Succesfuly login"
+          message: "Succesfuly login",
+          name:user.username
         }
   
       }
