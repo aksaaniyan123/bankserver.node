@@ -48,12 +48,13 @@ var acno=parseInt(acno);
       if(user)
       {
 
-        req.session.currentUser = user;
+        req.session.currentUser = user.acno;
         return {
           statusCode: 200,
           status: true,
           message: "Succesfuly login",
-          name:user.username
+          name:user.username,
+          acno:user.acno
         }
   
       }
@@ -153,7 +154,7 @@ return {
 //     }
 //   }
 
-const withdraw = (acno, password, amt) => {
+const withdraw = (req,acno, password, amt) => {
   var amount = parseInt(amt)
   return db.User.findOne({ acno,password })
   .then(user => {
@@ -163,6 +164,14 @@ const withdraw = (acno, password, amt) => {
         statusCode: 422,
         status: false,
         message: "invalid acnt"
+      }
+    }
+    if(req.session.currentUser!=acno)//current user allathe vere aalu withdraw cheyyannokkumbol pemission denied cheyyunna step
+    {
+      return {
+        statusCode: 422,
+        status: false,
+        message: "operation denied"
       }
     }
     if(user.balance<=amount)
@@ -213,11 +222,31 @@ return {
   //     message: "invalid acnt"
   //   }
   // }
+const deleteAccDetails =(acno)=>{
+  return db.User.deleteOne({
+    acno:acno
+  }).then(user=>{
+    if(!user){
+      return {
+            statusCode: 422,
+            status: false,
+            message: "operation failed"
+          }
 
+    }
+    return {
+            statusCode: 200,
+             status: true,
+           // balance: user[acno]["balance"],
+            message: "acc no" + acno+"deleted successfully"
+           }
+  })
+}
 
 module.exports = {
   register,
   login,
   deposit,
-  withdraw
+  withdraw,
+  deleteAccDetails
 }

@@ -98,7 +98,7 @@ app.post('/deposit', authMiddleware, (req, res) => {
 
 app.post('/withdraw', authMiddleware, (req, res) => {
 
-     dataService.withdraw(req.body.acno, req.body.pswd, req.body.amount)
+     dataService.withdraw(req,req.body.acno, req.body.pswd, req.body.amount)
      .then(result=>{
     res.status(result.statusCode).json(result)
      })
@@ -114,6 +114,14 @@ app.patch('/', (req, res) => {
 });
 app.delete('/', (req, res) => {
     res.send("this is a delete method")
+
+});
+app.delete('/deleteAccDetails/:acno', authMiddleware,(req, res) => {
+    //res.send("this is a delete method")
+    dataService.deleteAccDetails(req.params.acno)
+    .then(result=>{
+   res.status(result.statusCode).json(result)
+    })
 
 });
 app.listen(3000, () => {
